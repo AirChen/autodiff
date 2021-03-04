@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		074BBEC525EF6FA000B46237 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 074BBEC425EF6FA000B46237 /* main.cpp */; };
+		7F1DA83525F10DA80020CC28 /* ToyDatas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F1DA83325F10DA80020CC28 /* ToyDatas.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +26,8 @@
 /* Begin PBXFileReference section */
 		074BBEC125EF6FA000B46237 /* autodiff */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = autodiff; sourceTree = BUILT_PRODUCTS_DIR; };
 		074BBEC425EF6FA000B46237 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		7F1DA83325F10DA80020CC28 /* ToyDatas.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ToyDatas.cpp; sourceTree = "<group>"; };
+		7F1DA83425F10DA80020CC28 /* ToyDatas.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ToyDatas.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +61,8 @@
 			isa = PBXGroup;
 			children = (
 				074BBEC425EF6FA000B46237 /* main.cpp */,
+				7F1DA83425F10DA80020CC28 /* ToyDatas.hpp */,
+				7F1DA83325F10DA80020CC28 /* ToyDatas.cpp */,
 			);
 			path = autodiff;
 			sourceTree = "<group>";
@@ -118,6 +123,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F1DA83525F10DA80020CC28 /* ToyDatas.cpp in Sources */,
 				074BBEC525EF6FA000B46237 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -239,20 +245,24 @@
 		074BBEC925EF6FA000B46237 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = B5XLKXCN46;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
 		074BBECA25EF6FA000B46237 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = B5XLKXCN46;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};
