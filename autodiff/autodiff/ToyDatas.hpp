@@ -11,33 +11,37 @@
 #include <stdio.h>
 #include <string>
 
+typedef double real;
+
 class Object {
 public:
-    virtual double evaluate() = 0;
+    real _gradient = 0;
+    real _value = 0;
+    
+    virtual real evaluate() = 0;
     virtual std::string str() = 0;
     virtual Object* gradient(Object* v) = 0;
+    virtual void backpropagate(real gradient) = 0;
 };
 
 class Const: public Object {
-    double value;
-    
 public:
-    Const(double o): value(o) {}
+    Const(real o) { _value = o; }
     
-    double evaluate() override { return value; }
-    std::string str() override { return std::to_string(value); }
+    real evaluate() override { return _value; }
+    std::string str() override { return std::to_string(_value); }
     Object * gradient(Object* v) override { return new Const(0); }
+    void backpropagate(real gradient) override {}
 };
 
 class Var: public Object {
-    double value;
     std::string name;
     
 public:
-    Var(std::string k, double v = 0.01): name(k), value(v) {}
+    Var(std::string k, real v = 0.01): name(k) { _value = v; }
     
-    void setValue(double v) { value = v; }
-    double evaluate() override { return value; }
+    void setValue(real v) { _value = v; }
+    real evaluate() override { return _value; }
     std::string str() override { return name; }
     Object * gradient(Object *v) override
     {
@@ -45,6 +49,9 @@ public:
             return new Const(1);
         }
         return new Const(0);
+    }
+    void backpropagate(real gradient) override {
+        _gradient += gradient;
     }
 };
 
@@ -61,7 +68,7 @@ class Add: public Object, public BinaryOperator {
 public:
     using BinaryOperator::BinaryOperator;
     
-    double evaluate() override
+    real evaluate() override
     {
         return aObject->evaluate() + bObject->evaluate();
     }
@@ -78,13 +85,19 @@ public:
         
         return new Add(ad, bd);
     }
+    
+    void backpropagate(real gradient) override
+    {
+        aObject->backpropagate(gradient);
+        bObject->backpropagate(gradient);
+    }
 };
 
 class Mul: public Object, public BinaryOperator {
 public:
     using BinaryOperator::BinaryOperator;
     
-    double evaluate() override
+    real evaluate() override
     {
         return aObject->evaluate() * bObject->evaluate();
     }
@@ -103,6 +116,12 @@ public:
         Object* m1 = new Mul(aObject, bd);
         
         return new Add(m0, m1);
+    }
+    
+    void backpropagate(real gradient) override
+    {
+        aObject->backpropagate(bObject->_value * gradient);
+        bObject->backpropagate(aObject->_value * gradient);
     }
 };
 
