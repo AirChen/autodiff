@@ -144,7 +144,7 @@ int main(int argc, const char * argv[]) {
     std::cout << "test func: f(3, 4) d2fdydx: " << d2fdydx->evaluate() << " d2fdydy: " << d2fdydy->evaluate() << std::endl;
     
     f->backpropagate(1.0);
-    std::cout << "test func: x gradient: " << x->_gradient << " y gradient: " << y->_gradient << std::endl;
+    std::cout << "test func backpropagate: x gradient: " << x->_gradient << " y gradient: " << y->_gradient << std::endl;
     
     return 0;
 }

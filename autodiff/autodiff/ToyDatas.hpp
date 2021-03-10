@@ -70,7 +70,8 @@ public:
     
     real evaluate() override
     {
-        return aObject->evaluate() + bObject->evaluate();
+        _value = aObject->evaluate() + bObject->evaluate();
+        return _value;
     }
     
     std::string str() override
@@ -99,7 +100,8 @@ public:
     
     real evaluate() override
     {
-        return aObject->evaluate() * bObject->evaluate();
+        _value = aObject->evaluate() * bObject->evaluate();
+        return _value;
     }
     
     std::string str() override
