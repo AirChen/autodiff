@@ -115,15 +115,11 @@ int tmain(int argc, const char * argv[]) {
 #include "ToyDatas.hpp"
 
 int main(int argc, const char * argv[]) {
-    Var *x = new Var("x");
-    Var *y = new Var("y");
-    Const *c = new Const(2.0);
+    auto x = Var("x");
+    auto y = Var("y");
+    auto c = Const(2.0);
     
-    Mul *m0 = new Mul(x, x);
-    Mul *m1 = new Mul(m0, y);
-    Add *a0 = new Add(y, c);
-    
-    Object *f = new Add(m1, a0);
+    auto f = Add(Mul(Mul(x, x), y), Add(y, c));
     
     std::cout << "test func: " << f->str() << std::endl;
     
@@ -131,15 +127,15 @@ int main(int argc, const char * argv[]) {
     y->setValue(4.0);
     std::cout << "test func: f(3, 4) = " << f->evaluate() << std::endl;
     
-    Object* dfdx = f->gradient(x);
-    Object* dfdy = f->gradient(y);
+    auto dfdx = f->gradient(x);
+    auto dfdy = f->gradient(y);
     std::cout << "test func: f(3, 4) dfdx: " << dfdx->evaluate() << " dfdy: " << dfdy->evaluate() << std::endl;
     
-    Object* d2fdxdx = dfdx->gradient(x);
-    Object* d2fdxdy = dfdx->gradient(y);
+    auto d2fdxdx = dfdx->gradient(x);
+    auto d2fdxdy = dfdx->gradient(y);
     
-    Object* d2fdydx = dfdy->gradient(x);
-    Object* d2fdydy = dfdy->gradient(y);
+    auto d2fdydx = dfdy->gradient(x);
+    auto d2fdydy = dfdy->gradient(y);
     std::cout << "test func: f(3, 4) d2fdxdx: " << d2fdxdx->evaluate() << " d2fdxdy: " << d2fdxdy->evaluate() << std::endl;
     std::cout << "test func: f(3, 4) d2fdydx: " << d2fdydx->evaluate() << " d2fdydy: " << d2fdydy->evaluate() << std::endl;
     
