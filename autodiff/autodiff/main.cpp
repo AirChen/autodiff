@@ -7,76 +7,35 @@
 
 #include <iostream>
 #include <vector>
+#include <functional>
 
 #define EPS 0.0001
-
-typedef double (*funcptr) (...);
-
-typedef double (*funcsubptr_1) (double x);
-typedef double (*funcsubptr_2) (double x, double y);
-typedef double (*funcsubptr_3) (double x, double y, double z);
 
 double func(double x, double y) {
     return x * x * y + y + 2;
 }
 
-std::vector<double> gradients(funcptr fptr, int argc, double *args) {
+std::vector<double> gradients(int argc, std::function<double(double, double, double)> fp) {
     std::vector<double> ans;
-
-    if (argc == 1) {
-        funcsubptr_1 fp = (funcsubptr_1)fptr;
         
-        double base_func_value = fp(args[0]);
-        for(int i = 0; i < argc; i++) {
-            std::vector<double> tweaked_params{args[0]};
-            
-            tweaked_params[i] += EPS;
-            
-            double tweaked_func_value = fp(tweaked_params[0]);
-            double derivative = (tweaked_func_value - base_func_value)/EPS;
-            
-            ans.push_back(derivative);
-        }
-    }
-    
-    if (argc == 2) {
-        funcsubptr_2 fp = (funcsubptr_2)fptr;
+    double base_func_value = fp(0, 0, 0);
+    for(int i = 0; i < argc; i++) {
+        std::vector<double> tweaked_params(3, 0);
+        tweaked_params[i] = EPS;
         
-        double base_func_value = fp(args[0], args[1]);
-        for(int i = 0; i < argc; i++) {
-            std::vector<double> tweaked_params{args[0], args[1]};
-            
-            tweaked_params[i] += EPS;
-            
-            double tweaked_func_value = fp(tweaked_params[0], tweaked_params[1]);
-            double derivative = (tweaked_func_value - base_func_value)/EPS;
-            
-            ans.push_back(derivative);
-        }
-    }
-    
-    if (argc == 3) {
-        funcsubptr_3 fp = (funcsubptr_3)fptr;
-        
-        double base_func_value = fp(args[0], args[1], args[2]);
-        for(int i = 0; i < argc; i++) {
-            std::vector<double> tweaked_params{args[0], args[1], args[2]};
-
-            tweaked_params[i] += EPS;
-
-            double tweaked_func_value = fp(tweaked_params[0], tweaked_params[1], tweaked_params[2]);
-            double derivative = (tweaked_func_value - base_func_value)/EPS;
-
-            ans.push_back(derivative);
-        }
+        double tweaked_func_value = fp(tweaked_params[0], tweaked_params[1], tweaked_params[2]);
+        double derivative = (tweaked_func_value - base_func_value)/EPS;
+        ans.push_back(derivative);
     }
     
     return ans;
 }
 
 std::vector<double> df(double x, double y) {
-    double vs[2] = {x, y};
-    return gradients((funcptr)func, 2, vs);
+    auto lam = [=](double lx, double ly, double o) -> double {
+        return func(x + lx, y + ly);
+    };
+    return gradients(2, lam);
 }
 
 double dfdx(double x, double y) {
@@ -88,9 +47,15 @@ double dfdy(double x, double y) {
 }
 
 std::vector<double> d2f(double x, double y) {
-    double vs[2] = {x, y};
-    std::vector<double> ans_dx = gradients((funcptr)dfdx, 2, vs);
-    std::vector<double> ans_dy = gradients((funcptr)dfdy, 2, vs);
+    auto lam_x = [=](double lx, double ly, double o) -> double {
+        return dfdx(x + lx, y + ly);
+    };
+    std::vector<double> ans_dx = gradients(2, lam_x);
+    
+    auto lam_y = [=](double lx, double ly, double o) -> double {
+        return dfdy(x + lx, y + ly);
+    };
+    std::vector<double> ans_dy = gradients(2, lam_y);
     
     ans_dx.insert(ans_dx.end(), ans_dy.begin(), ans_dy.end());
     return ans_dx;
@@ -149,9 +114,12 @@ double z(double x) {
     return sin(pow(x, 2));
 }
 
-int main_1(int argc, const char * argv[]) {
-    double vs[1] = {3};
-    std::vector<double> ans = gradients((funcptr)z, 1, vs);
+int zmain(int argc, const char * argv[]) {
+    auto lam = [=](double lx, double o, double e) -> double {
+        return z(3 + lx);
+    };
+    
+    std::vector<double> ans = gradients(1, lam);
 
     std::cout << "test func: dz = " << ans[0] << std::endl;
     
