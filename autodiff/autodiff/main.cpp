@@ -115,11 +115,11 @@ int tmain(int argc, const char * argv[]) {
 #include "ToyDatas.hpp"
 
 int main(int argc, const char * argv[]) {
-    auto x = Var("x");
-    auto y = Var("y");
-    auto c = Const(2.0);
+    auto x = var_func("x");
+    auto y = var_func("y");
+    auto c = const_func(2.0);
     
-    auto f = Add(Mul(Mul(x, x), y), Add(y, c));
+    auto f = add_func(mul_func(mul_func(x, x), y), add_func(y, c));
     
     std::cout << "test func: " << f->str() << std::endl;
     

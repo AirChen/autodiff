@@ -14,18 +14,23 @@
 
 typedef double real;
 
-class Object {
+class ObjectProtocol {
+public:
+    virtual real evaluate() = 0;
+    virtual std::string str() = 0;
+};
+
+class Object: public ObjectProtocol {
 public:
     real _gradient = 0;
     real _value = 0;
     
-    virtual real evaluate() = 0;
-    virtual std::string str() = 0;
-    virtual std::shared_ptr<Object> gradient(Object* o) {
-        return gradient(std::shared_ptr<Object>(o));
-    };
-    virtual std::shared_ptr<Object> gradient(std::shared_ptr<Object> o) = 0;
-    virtual void backpropagate(real gradient) = 0;
+    virtual std::shared_ptr<Object> gradient(Object* o) { return gradient(std::shared_ptr<Object>(o)); };
+    virtual std::shared_ptr<Object> gradient(std::shared_ptr<Object> o) { return nullptr; };
+    virtual void backpropagate(real gradient) {};
+    
+    virtual real evaluate() { return 0; };
+    virtual std::string str() { return ""; };
 };
 
 class Const: public Object {
@@ -40,7 +45,7 @@ public:
     static std::shared_ptr<Const> instance(real o) { return std::make_shared<Const>(o); }
 };
 
-#define Const(o) Const::instance(o)
+inline std::shared_ptr<Const> const_func(real o) { return Const::instance(o); }
 
 class Var: public Object {
     std::string name;
@@ -68,8 +73,8 @@ public:
     }
 };
 
-#define Var(k) Var::instance(k)
-//#define Var(k, v) Var::instance(k, v)
+inline std::shared_ptr<Var> var_func(std::string k) { return Var::instance(k); }
+inline std::shared_ptr<Var> var_func(std::string k, real v) { return Var::instance(k, v); }
 
 class BinaryOperator {
 protected:
@@ -121,7 +126,8 @@ public:
     }
 };
 
-#define Add(a, b) Add::instance((a), (b))
+inline std::shared_ptr<Add> add_func(Object* a, Object* b) { return Add::instance(a, b); }
+inline std::shared_ptr<Add> add_func(std::shared_ptr<Object> a, std::shared_ptr<Object> b) { return Add::instance(a, b); }
 
 class Mul: public Object, public BinaryOperator {
 public:
@@ -166,6 +172,7 @@ public:
     }
 };
 
-#define Mul(a, b) Mul::instance((a), (b))
+inline std::shared_ptr<Mul> mul_func(Object* a, Object* b) { return Mul::instance(a, b); }
+inline std::shared_ptr<Mul> mul_func(std::shared_ptr<Object> a, std::shared_ptr<Object> b) { return Mul::instance(a, b); }
 
 #endif /* ToyDatas_hpp */
