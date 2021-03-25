@@ -325,7 +325,7 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
-				HEADER_SEARCH_PATHS = "\"/Users/AirChen/ws/repos/autodiff/autodiff/3rd_part\"";
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/3rd_part";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -338,7 +338,7 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
-				HEADER_SEARCH_PATHS = "\"/Users/AirChen/ws/repos/autodiff/autodiff/3rd_part\"";
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/3rd_part";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -348,7 +348,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				HEADER_SEARCH_PATHS = "\"/Users/AirChen/ws/repos/autodiff/autodiff/3rd_part\"";
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/3rd_part";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/3rd_part",
@@ -361,7 +361,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				HEADER_SEARCH_PATHS = "\"/Users/AirChen/ws/repos/autodiff/autodiff/3rd_part\"";
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/3rd_part";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/3rd_part",
