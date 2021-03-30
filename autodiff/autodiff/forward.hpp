@@ -83,7 +83,7 @@ public:
     using elect<T>::elect;
     
     virtual std::string description() override {
-        return "const";
+        return "( " + std::to_string(this->value) + " )";
     }
 };
 
@@ -121,11 +121,49 @@ public:
     elect<T> right;
     bielect_t type;
         
-    bielect(const elect<T>& lhs, const elect<T>& rhs, const bielect_t& t): left(lhs), right(rhs), type(t){};
+    bielect(const elect<T>& lhs, const elect<T>& rhs, const bielect_t& t): left(lhs), right(rhs), type(t){
+        switch (t) {
+            case bielect_t_add:
+                this->value = lhs.value + rhs.value;
+                break;
+            case bielect_t_sub:
+                this->value = lhs.value - rhs.value;
+                break;
+            case bielect_t_mul:
+                this->value = lhs.value * rhs.value;
+                break;
+            case bielect_t_div:
+                // rhs.value != 0
+                this->value = lhs.value + rhs.value;
+                break;
+                
+            default:
+                // error
+                break;
+        }
+    };
     ~bielect(){};
     
     std::string description() override {
-        return left.description() + " + " + right.description();
+        std::string ans;
+        switch (type) {
+            case bielect_t_add:
+                ans = left.description() + " + " + right.description();
+                break;
+            case bielect_t_sub:
+                ans = left.description() + " - " + right.description();
+                break;
+            case bielect_t_mul:
+                ans = left.description() + " * " + right.description();
+                break;
+            case bielect_t_div:
+                ans = left.description() + " / " + right.description();
+                break;
+                
+            default:
+                break;
+        }
+        return ans;
     }
 };
 
@@ -149,30 +187,98 @@ std::string elect<T>::description() {
 
 namespace fake {
 
-template<typename T>
-elect<T> operator+(const elect<T>& lhs, const elect<T>& rhs)
-{
-    bielect<T> bi(lhs, rhs, bielect_t_add);
-    return bi;
-}
+    template<typename T>
+    elect<T> operator+(const elect<T>& lhs, const elect<T>& rhs)
+    {
+        bielect<T> bi(lhs, rhs, bielect_t_add);
+        return bi;
+    }
 
-template<typename T>
-elect<T> operator+(T lhs, const elect<T>& rhs)
-{
-    conelect<T> c;
-//    c.value = lhs;
-    bielect<T> bi(c, rhs, bielect_t_add);
-    return bi;
-}
+    template<typename T>
+    elect<T> operator+(T lhs, const elect<T>& rhs)
+    {
+        conelect<T> c(lhs);
+        bielect<T> bi(c, rhs, bielect_t_add);
+        return bi;
+    }
 
-template<typename T>
-elect<T> operator+(const elect<T>& lhs, T rhs)
-{
-    conelect<T> c;
-//    c.value = rhs;
-    bielect<T> bi(lhs, c, bielect_t_add);
-    return bi;
-}
+    template<typename T>
+    elect<T> operator+(const elect<T>& lhs, T rhs)
+    {
+        conelect<T> c(rhs);
+        bielect<T> bi(lhs, c, bielect_t_add);
+        return bi;
+    }
+
+    template<typename T>
+    elect<T> operator-(const elect<T>& lhs, const elect<T>& rhs)
+    {
+        bielect<T> bi(lhs, rhs, bielect_t_sub);
+        return bi;
+    }
+
+    template<typename T>
+    elect<T> operator-(T lhs, const elect<T>& rhs)
+    {
+        conelect<T> c(lhs);
+        bielect<T> bi(c, rhs, bielect_t_sub);
+        return bi;
+    }
+
+    template<typename T>
+    elect<T> operator-(const elect<T>& lhs, T rhs)
+    {
+        conelect<T> c(rhs);
+        bielect<T> bi(lhs, c, bielect_t_sub);
+        return bi;
+    }
+
+    template<typename T>
+    elect<T> operator*(const elect<T>& lhs, const elect<T>& rhs)
+    {
+        bielect<T> bi(lhs, rhs, bielect_t_mul);
+        return bi;
+    }
+
+    template<typename T>
+    elect<T> operator*(T lhs, const elect<T>& rhs)
+    {
+        conelect<T> c;
+        c.value = lhs;// why ?
+        bielect<T> bi(c, rhs, bielect_t_mul);
+        return bi;
+    }
+
+    template<typename T>
+    elect<T> operator*(const elect<T>& lhs, T rhs)
+    {
+        conelect<T> c(rhs);
+        bielect<T> bi(lhs, c, bielect_t_mul);
+        return bi;
+    }
+
+    template<typename T>
+    elect<T> operator/(const elect<T>& lhs, const elect<T>& rhs)
+    {
+        bielect<T> bi(lhs, rhs, bielect_t_div);
+        return bi;
+    }
+
+    template<typename T>
+    elect<T> operator/(T lhs, const elect<T>& rhs)
+    {
+        conelect<T> c(lhs);
+        bielect<T> bi(c, rhs, bielect_t_div);
+        return bi;
+    }
+
+    template<typename T>
+    elect<T> operator/(const elect<T>& lhs, T rhs)
+    {
+        conelect<T> c(rhs);
+        bielect<T> bi(lhs, c, bielect_t_div);
+        return bi;
+    }
 
 }
 

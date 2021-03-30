@@ -12,8 +12,8 @@
 class ForwardTest: public ::testing::Test
 {
 public:
-    elect<int> x = 100;
-    elect<int> y = 200;
+    elect<double> x = 100;
+    elect<double> y = 200;
 };
 
 TEST_F(ForwardTest, trivial_tests)
@@ -29,20 +29,21 @@ TEST_F(ForwardTest, trivial_tests)
     EXPECT_TRUE(x == 20);
 };
 
+using namespace fake;
 TEST_F(ForwardTest, aliasing_tests)
 {
-//    x = 1; x = x + 3*x - 2*x + x;
-//    REQUIRE( x == 3 );
+    x = 1; x = x + 3.0*x - 2.0*x + x;
+    EXPECT_TRUE(x == 3);
 
-//    x = 1; x += x + 3*x - 2*x + x;
-//    REQUIRE( x == 4 );
+    x = 1; x += x + 3.0*x - 2.0*x + x;
+    EXPECT_TRUE(x == 4);
 
-//    x = 1; x -= x + 3*x - 2*x + x;
-//    REQUIRE( x == -2 );
+    x = 1; x -= x + 3.0*x - 2.0*x + x;
+    EXPECT_TRUE(x == -2);
 
-//    x = 1; x *= x + 3*x - 2*x + x;
-//    REQUIRE( x == 3 );
+    x = 1; x *= x + 3.0*x - 2.0*x + x;
+    EXPECT_TRUE(x == 3);
 
     x = 1; x /= x + x;
-//    REQUIRE( x == 0.5 );
+    EXPECT_TRUE(x == 0.5);
 }
