@@ -197,7 +197,8 @@ namespace fake {
     template<typename T>
     elect<T> operator+(T lhs, const elect<T>& rhs)
     {
-        conelect<T> c(lhs);
+        conelect<T> c;
+        c.value = lhs;
         bielect<T> bi(c, rhs, bielect_t_add);
         return bi;
     }
@@ -205,7 +206,8 @@ namespace fake {
     template<typename T>
     elect<T> operator+(const elect<T>& lhs, T rhs)
     {
-        conelect<T> c(rhs);
+        conelect<T> c;
+        c.value = rhs;
         bielect<T> bi(lhs, c, bielect_t_add);
         return bi;
     }
