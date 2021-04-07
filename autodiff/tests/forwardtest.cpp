@@ -12,10 +12,11 @@
 class ForwardTest: public ::testing::Test
 {
 public:
-    elect<double> x = 100;
-    elect<double> y = 200;
+    std::shared_ptr<elect<double>> x = std::make_shared<elect<double>>(100);
+    std::shared_ptr<elect<double>> y = std::make_shared<elect<double>>(200);
 };
 
+using namespace fake;
 TEST_F(ForwardTest, trivial_tests)
 {
     EXPECT_TRUE(x == 100);
@@ -29,7 +30,6 @@ TEST_F(ForwardTest, trivial_tests)
     EXPECT_TRUE(x == 20);
 };
 
-using namespace fake;
 TEST_F(ForwardTest, aliasing_tests)
 {
     x = 1; x = x + 3.0*x - 2.0*x + x;
