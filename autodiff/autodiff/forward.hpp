@@ -43,14 +43,6 @@ struct elect{
     elect(const T&& t): value(t), type(elect_type_atomic) {};
     ~elect(){};
     
-    bool operator==(const elect&& other) {
-        return value == other.value;
-    }
-    
-    bool operator!=(const elect&& other) {
-        return value != other.value;
-    }
-    
     elect& operator+=(const elect&& other) {
         value += other.value;
         type = other.type;
@@ -174,7 +166,6 @@ public:
 };
 
 namespace fake {
-
     template<typename T>
     elect<T> operator+(const elect<T>& lhs, const elect<T>& rhs)
     {
@@ -265,6 +256,103 @@ namespace fake {
         conelect<T> c(rhs);
         bielect<T> bi(lhs, c, binary_type_div);
         return bi;
+    }
+}
+
+namespace compare {
+    template<typename T>
+    bool operator==(const elect<T>& lhs, const elect<T>& rhs) {
+        return lhs.value == rhs.value;
+    }
+
+    template<typename T, typename O>
+    bool operator==(const elect<T>& lhs, const O rhs) {
+        return lhs.value == rhs;
+    }
+
+    template<typename T, typename O>
+    bool operator==(const O lhs, const elect<T>& rhs) {
+        return lhs == rhs.value;
+    }
+
+    template<typename T>
+    bool operator!=(const elect<T>& lhs, const elect<T>& rhs) {
+        return lhs.value != rhs.value;
+    }
+
+    template<typename T, typename O>
+    bool operator!=(const elect<T>& lhs, const O rhs) {
+        return lhs.value != rhs;
+    }
+
+    template<typename T, typename O>
+    bool operator!=(const O lhs, const elect<T>& rhs) {
+        return lhs != rhs.value;
+    }
+
+
+    // >
+    template<typename T>
+    bool operator>(const elect<T>& lhs, const elect<T>& rhs) {
+        return lhs.value > rhs.value;
+    }
+
+    template<typename T, typename O>
+    bool operator>(const elect<T>& lhs, const O rhs) {
+        return lhs.value > rhs;
+    }
+
+    template<typename T, typename O>
+    bool operator>(const O lhs, const elect<T>& rhs) {
+        return lhs > rhs.value;
+    }
+
+    // >=
+    template<typename T>
+    bool operator>=(const elect<T>& lhs, const elect<T>& rhs) {
+        return lhs.value >= rhs.value;
+    }
+
+    template<typename T, typename O>
+    bool operator>=(const elect<T>& lhs, const O rhs) {
+        return lhs.value >= rhs;
+    }
+
+    template<typename T, typename O>
+    bool operator>=(const O lhs, const elect<T>& rhs) {
+        return lhs >= rhs.value;
+    }
+
+    // <
+    template<typename T>
+    bool operator<(const elect<T>& lhs, const elect<T>& rhs) {
+        return lhs.value < rhs.value;
+    }
+
+    template<typename T, typename O>
+    bool operator<(const elect<T>& lhs, const O rhs) {
+        return lhs.value < rhs;
+    }
+
+    template<typename T, typename O>
+    bool operator<(const O lhs, const elect<T>& rhs) {
+        return lhs < rhs.value;
+    }
+
+    // <=
+    template<typename T>
+    bool operator<=(const elect<T>& lhs, const elect<T>& rhs) {
+        return lhs.value <= rhs.value;
+    }
+
+    template<typename T, typename O>
+    bool operator<=(const elect<T>& lhs, const O rhs) {
+        return lhs.value <= rhs;
+    }
+
+    template<typename T, typename O>
+    bool operator<=(const O lhs, const elect<T>& rhs) {
+        return lhs <= rhs.value;
     }
 }
 

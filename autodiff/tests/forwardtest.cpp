@@ -16,6 +16,7 @@ public:
     elect<double> y = 200;
 };
 
+using namespace compare;
 TEST_F(ForwardTest, trivial_tests)
 {
     EXPECT_TRUE(x == 100);
@@ -51,4 +52,32 @@ TEST_F(ForwardTest, aliasing_tests)
     x = 1; x /= x + x;
     EXPECT_TRUE(x == 0.5);
     std::cout << "x = " << x.description() << std::endl;
+}
+
+TEST_F(ForwardTest, comparison_operators)
+{
+    x = 6;
+    y = 5;
+    
+    EXPECT_TRUE(x == 6);
+    EXPECT_TRUE(6 == x);
+    EXPECT_TRUE(x == x);
+    
+    EXPECT_TRUE(x != 5);
+    EXPECT_TRUE(5 != x);
+    EXPECT_TRUE(x != y);
+    
+    EXPECT_TRUE(x > 5);
+    EXPECT_TRUE(x > y);
+    
+    EXPECT_TRUE(x >= 6);
+    EXPECT_TRUE(x >= x);
+    EXPECT_TRUE(x >= y);
+    
+    EXPECT_TRUE(5 < x);
+    EXPECT_TRUE(y < x);
+    
+    EXPECT_TRUE(6 <= x);
+    EXPECT_TRUE(x <= x);
+    EXPECT_TRUE(y <= x);
 }
