@@ -32,18 +32,23 @@ TEST_F(ForwardTest, trivial_tests)
 using namespace fake;
 TEST_F(ForwardTest, aliasing_tests)
 {
-    x = 1; x = x + 3.0*x - 2.0*x + x;
+    x = 1; x = x + 3*x - 2*x + x;
     EXPECT_TRUE(x == 3);
+    std::cout << "x = " << x.description() << std::endl;
 
-    x = 1; x += x + 3.0*x - 2.0*x + x;
+    x = 1; x += x + 3*x - 2*x + x;
     EXPECT_TRUE(x == 4);
+    std::cout << "x = " << x.description() << std::endl;
 
-    x = 1; x -= x + 3.0*x - 2.0*x + x;
+    x = 1; x -= x + 3*x - 2*x + x;
     EXPECT_TRUE(x == -2);
+    std::cout << "x = " << x.description() << std::endl;
 
-    x = 1; x *= x + 3.0*x - 2.0*x + x;
+    x = 1; x *= x + 3*x - 2*x + x;
     EXPECT_TRUE(x == 3);
+    std::cout << "x = " << x.description() << std::endl;
 
     x = 1; x /= x + x;
     EXPECT_TRUE(x == 0.5);
+    std::cout << "x = " << x.description() << std::endl;
 }
