@@ -14,6 +14,7 @@
 
 enum elect_type {
     elect_type_atomic,
+    elect_type_var,
     elect_type_const,
     elect_type_single,
     elect_type_binary
@@ -43,48 +44,6 @@ struct elect{
     elect(const T&& t): value(t), type(elect_type_atomic) {};
     ~elect(){};
     
-    elect& operator+=(const elect&& other) {
-        value += other.value;
-        type = other.type;
-        subType = other.subType;
-        nodes = other.nodes;
-        return *this;
-    }
-    
-    elect& operator-=(const elect&& other) {
-        value -= other.value;
-        type = other.type;
-        subType = other.subType;
-        nodes = other.nodes;
-        return *this;
-    }
-    
-    elect& operator*=(const elect&& other) {
-        value *= other.value;
-        type = other.type;
-        subType = other.subType;
-        nodes = other.nodes;
-        return *this;
-    }
-    
-    elect& operator/=(const elect&& other) {
-//        assert(other.value != 0);
-        
-        value /= other.value;
-        type = other.type;
-        subType = other.subType;
-        nodes = other.nodes;
-        return *this;
-    }
-    
-    elect& operator=(const elect& other) {
-        value = other.value;
-        type = other.type;
-        subType = other.subType;
-        nodes = other.nodes;
-        return *this;
-    }
-    
     std::string description();
     elect gradient(const elect& e);
 };
@@ -96,6 +55,63 @@ struct conelect: public elect<T> {
         this->type = elect_type_const;
     };
     ~conelect() {};
+};
+
+template<typename T>
+struct varelect: public elect<T> {
+    varelect(T v, char c) {
+        this->value = v;
+        this->type = elect_type_var;
+        this->subType = c;
+    };
+    varelect(char c) {
+        this->value = 0;
+        this->type = elect_type_var;
+        this->subType = c;
+    };
+    ~varelect() {};
+    
+    varelect& operator=(const varelect& other) {
+        this->value = other.value;
+        this->type = other.type;
+        this->subType = other.subType;
+        this->nodes = other.nodes;
+        return *this;
+    }
+    
+    varelect& operator+=(const varelect&& other) {
+        this->value += other.value;
+        this->type = other.type;
+        this->subType = other.subType;
+        this->nodes = other.nodes;
+        return *this;
+    }
+    
+    varelect& operator-=(const varelect&& other) {
+        this->value -= other.value;
+        this->type = other.type;
+        this->subType = other.subType;
+        this->nodes = other.nodes;
+        return *this;
+    }
+    
+    varelect& operator*=(const varelect&& other) {
+        this->value *= other.value;
+        this->type = other.type;
+        this->subType = other.subType;
+        this->nodes = other.nodes;
+        return *this;
+    }
+    
+    varelect& operator/=(const varelect&& other) {
+//        assert(other.value != 0);
+        
+        this->value /= other.value;
+        this->type = other.type;
+        this->subType = other.subType;
+        this->nodes = other.nodes;
+        return *this;
+    }
 };
 
 template<typename T>
@@ -171,14 +187,14 @@ std::string elect<T>::description() {
  
 namespace fake {
     template<typename T>
-    elect<T> operator+(const elect<T>& lhs, const elect<T>& rhs)
+    varelect<T> operator+(const varelect<T>& lhs, const varelect<T>& rhs)
     {
         bielect<T> bi(lhs, rhs, binary_type_add);
         return bi;
     }
 
     template<typename T, typename O>
-    elect<T> operator+(O lhs, const elect<T>& rhs)
+    varelect<T> operator+(O lhs, const varelect<T>& rhs)
     {
         conelect<T> c(lhs);
         bielect<T> bi(c, rhs, binary_type_add);
@@ -186,7 +202,7 @@ namespace fake {
     }
 
     template<typename T, typename O>
-    elect<T> operator+(const elect<T>& lhs, O rhs)
+    varelect<T> operator+(const varelect<T>& lhs, O rhs)
     {
         conelect<T> c(rhs);
         bielect<T> bi(lhs, c, binary_type_add);
@@ -194,14 +210,14 @@ namespace fake {
     }
 
     template<typename T>
-    elect<T> operator-(const elect<T>& lhs, const elect<T>& rhs)
+    varelect<T> operator-(const varelect<T>& lhs, const varelect<T>& rhs)
     {
         bielect<T> bi(lhs, rhs, binary_type_sub);
         return bi;
     }
 
     template<typename T, typename O>
-    elect<T> operator-(O lhs, const elect<T>& rhs)
+    varelect<T> operator-(O lhs, const varelect<T>& rhs)
     {
         conelect<T> c(lhs);
         bielect<T> bi(c, rhs, binary_type_sub);
@@ -209,7 +225,7 @@ namespace fake {
     }
 
     template<typename T, typename O>
-    elect<T> operator-(const elect<T>& lhs, O rhs)
+    varelect<T> operator-(const varelect<T>& lhs, O rhs)
     {
         conelect<T> c(rhs);
         bielect<T> bi(lhs, c, binary_type_sub);
@@ -217,14 +233,14 @@ namespace fake {
     }
 
     template<typename T>
-    elect<T> operator*(const elect<T>& lhs, const elect<T>& rhs)
+    varelect<T> operator*(const varelect<T>& lhs, const varelect<T>& rhs)
     {
         bielect<T> bi(lhs, rhs, binary_type_mul);
         return bi;
     }
 
     template<typename T, typename O>
-    elect<T> operator*(O lhs, const elect<T>& rhs)
+    varelect<T> operator*(O lhs, const varelect<T>& rhs)
     {
         conelect<T> c(lhs);
         bielect<T> bi(c, rhs, binary_type_mul);
@@ -232,7 +248,7 @@ namespace fake {
     }
 
     template<typename T, typename O>
-    elect<T> operator*(const elect<T>& lhs, O rhs)
+    varelect<T> operator*(const varelect<T>& lhs, O rhs)
     {
         conelect<T> c(rhs);
         bielect<T> bi(lhs, c, binary_type_mul);
@@ -240,14 +256,14 @@ namespace fake {
     }
 
     template<typename T>
-    elect<T> operator/(const elect<T>& lhs, const elect<T>& rhs)
+    varelect<T> operator/(const varelect<T>& lhs, const varelect<T>& rhs)
     {
         bielect<T> bi(lhs, rhs, binary_type_div);
         return bi;
     }
 
     template<typename T, typename O>
-    elect<T> operator/(O lhs, const elect<T>& rhs)
+    varelect<T> operator/(O lhs, const varelect<T>& rhs)
     {
         conelect<T> c(lhs);
         bielect<T> bi(c, rhs, binary_type_div);
@@ -255,7 +271,7 @@ namespace fake {
     }
 
     template<typename T, typename O>
-    elect<T> operator/(const elect<T>& lhs, O rhs)
+    varelect<T> operator/(const varelect<T>& lhs, O rhs)
     {
         conelect<T> c(rhs);
         bielect<T> bi(lhs, c, binary_type_div);
@@ -265,97 +281,97 @@ namespace fake {
 
 namespace compare {
     template<typename T>
-    bool operator==(const elect<T>& lhs, const elect<T>& rhs) {
+    bool operator==(const varelect<T>& lhs, const varelect<T>& rhs) {
         return lhs.value == rhs.value;
     }
 
     template<typename T, typename O>
-    bool operator==(const elect<T>& lhs, const O rhs) {
+    bool operator==(const varelect<T>& lhs, const O rhs) {
         return lhs.value == rhs;
     }
 
     template<typename T, typename O>
-    bool operator==(const O lhs, const elect<T>& rhs) {
+    bool operator==(const O lhs, const varelect<T>& rhs) {
         return lhs == rhs.value;
     }
 
     template<typename T>
-    bool operator!=(const elect<T>& lhs, const elect<T>& rhs) {
+    bool operator!=(const varelect<T>& lhs, const varelect<T>& rhs) {
         return lhs.value != rhs.value;
     }
 
     template<typename T, typename O>
-    bool operator!=(const elect<T>& lhs, const O rhs) {
+    bool operator!=(const varelect<T>& lhs, const O rhs) {
         return lhs.value != rhs;
     }
 
     template<typename T, typename O>
-    bool operator!=(const O lhs, const elect<T>& rhs) {
+    bool operator!=(const O lhs, const varelect<T>& rhs) {
         return lhs != rhs.value;
     }
 
 
     // >
     template<typename T>
-    bool operator>(const elect<T>& lhs, const elect<T>& rhs) {
+    bool operator>(const varelect<T>& lhs, const varelect<T>& rhs) {
         return lhs.value > rhs.value;
     }
 
     template<typename T, typename O>
-    bool operator>(const elect<T>& lhs, const O rhs) {
+    bool operator>(const varelect<T>& lhs, const O rhs) {
         return lhs.value > rhs;
     }
 
     template<typename T, typename O>
-    bool operator>(const O lhs, const elect<T>& rhs) {
+    bool operator>(const O lhs, const varelect<T>& rhs) {
         return lhs > rhs.value;
     }
 
     // >=
     template<typename T>
-    bool operator>=(const elect<T>& lhs, const elect<T>& rhs) {
+    bool operator>=(const varelect<T>& lhs, const varelect<T>& rhs) {
         return lhs.value >= rhs.value;
     }
 
     template<typename T, typename O>
-    bool operator>=(const elect<T>& lhs, const O rhs) {
+    bool operator>=(const varelect<T>& lhs, const O rhs) {
         return lhs.value >= rhs;
     }
 
     template<typename T, typename O>
-    bool operator>=(const O lhs, const elect<T>& rhs) {
+    bool operator>=(const O lhs, const varelect<T>& rhs) {
         return lhs >= rhs.value;
     }
 
     // <
     template<typename T>
-    bool operator<(const elect<T>& lhs, const elect<T>& rhs) {
+    bool operator<(const varelect<T>& lhs, const varelect<T>& rhs) {
         return lhs.value < rhs.value;
     }
 
     template<typename T, typename O>
-    bool operator<(const elect<T>& lhs, const O rhs) {
+    bool operator<(const varelect<T>& lhs, const O rhs) {
         return lhs.value < rhs;
     }
 
     template<typename T, typename O>
-    bool operator<(const O lhs, const elect<T>& rhs) {
+    bool operator<(const O lhs, const varelect<T>& rhs) {
         return lhs < rhs.value;
     }
 
     // <=
     template<typename T>
-    bool operator<=(const elect<T>& lhs, const elect<T>& rhs) {
+    bool operator<=(const varelect<T>& lhs, const varelect<T>& rhs) {
         return lhs.value <= rhs.value;
     }
 
     template<typename T, typename O>
-    bool operator<=(const elect<T>& lhs, const O rhs) {
+    bool operator<=(const varelect<T>& lhs, const O rhs) {
         return lhs.value <= rhs;
     }
 
     template<typename T, typename O>
-    bool operator<=(const O lhs, const elect<T>& rhs) {
+    bool operator<=(const O lhs, const varelect<T>& rhs) {
         return lhs <= rhs.value;
     }
 }
@@ -364,21 +380,18 @@ using namespace fake;
 template<typename T>
 elect<T> elect<T>::gradient(const elect<T>& e) {
     switch (type) {
-        case elect_type_atomic:
+        case elect_type_var:
         {
-            conelect<T> con(1);
-            return con;
-            // TODO: ==
-//            if (o->str() == str()) {
-//                return std::make_shared<Const>(1.0);
-//            }
-//            return std::make_shared<Const>(0);
+            if (subType == e.subType) {
+                return 1;
+            }
+            return 0;
         }
             break;
+        case elect_type_atomic:
         case elect_type_const:
         {
-            conelect<T> con(0);
-            return con;
+            return 0;
         }
             break;
         case elect_type_single:
