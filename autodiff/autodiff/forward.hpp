@@ -125,7 +125,7 @@ public:
                 break;
             case binary_type_div:
                 // rhs.value != 0
-                this->value = lhs.value + rhs.value;
+                this->value = lhs.value / rhs.value;
                 break;
 
             default:
