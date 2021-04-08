@@ -85,31 +85,8 @@ struct elect{
         return *this;
     }
     
-    std::string description() {
-        if (type == elect_type_atomic) {
-            return "var(" + std::to_string(value) + ")";
-        } else if (type == elect_type_const) {
-            return "( " + std::to_string(this->value) + " )";
-        } else if (type == elect_type_single) {
-            return "xx " + nodes[0].description();
-        } else if (type == elect_type_binary) {
-            switch (subType) {
-                case binary_type_add:
-                    return  nodes[0].description() + " + " + nodes[1].description();
-                case binary_type_sub:
-                    return  nodes[0].description() + " - " + nodes[1].description();
-                case binary_type_mul:
-                    return  nodes[0].description() + " * " + nodes[1].description();
-                case binary_type_div:
-                    return  nodes[0].description() + " / " + nodes[1].description();
-    
-                default:
-                    return "binary func not define!";
-            }
-        }
-        
-        return "not define elect type!";
-    }
+    std::string description();
+    elect gradient(const elect& e);
 };
 
 template<typename T>
@@ -165,6 +142,33 @@ public:
     ~bielect(){};
 };
 
+template<typename T>
+std::string elect<T>::description() {
+    if (type == elect_type_atomic) {
+        return "var(" + std::to_string(value) + ")";
+    } else if (type == elect_type_const) {
+        return "( " + std::to_string(this->value) + " )";
+    } else if (type == elect_type_single) {
+        return "xx " + nodes[0].description();
+    } else if (type == elect_type_binary) {
+        switch (subType) {
+            case binary_type_add:
+                return  nodes[0].description() + " + " + nodes[1].description();
+            case binary_type_sub:
+                return  nodes[0].description() + " - " + nodes[1].description();
+            case binary_type_mul:
+                return  nodes[0].description() + " * " + nodes[1].description();
+            case binary_type_div:
+                return  nodes[0].description() + " / " + nodes[1].description();
+
+            default:
+                return "binary func not define!";
+        }
+    }
+    
+    return "not define elect type!";
+};
+ 
 namespace fake {
     template<typename T>
     elect<T> operator+(const elect<T>& lhs, const elect<T>& rhs)
@@ -355,5 +359,72 @@ namespace compare {
         return lhs <= rhs.value;
     }
 }
+
+using namespace fake;
+template<typename T>
+elect<T> elect<T>::gradient(const elect<T>& e) {
+    switch (type) {
+        case elect_type_atomic:
+        {
+            conelect<T> con(1);
+            return con;
+            // TODO: ==
+//            if (o->str() == str()) {
+//                return std::make_shared<Const>(1.0);
+//            }
+//            return std::make_shared<Const>(0);
+        }
+            break;
+        case elect_type_const:
+        {
+            conelect<T> con(0);
+            return con;
+        }
+            break;
+        case elect_type_single:
+        {
+            
+        }
+            break;
+        case elect_type_binary:
+        {
+            elect<T> ad = nodes[0].gradient(e);
+            elect<T> bd = nodes[1].gradient(e);
+            switch (subType) {
+                case binary_type_add:
+                {
+                    return ad + bd;
+                }
+                    break;
+                case binary_type_sub:
+                {
+                    return ad - bd;
+                }
+                    break;
+                case binary_type_mul:
+                {
+                    return ad * nodes[1] + nodes[0] * bd;
+                }
+                    break;
+                case binary_type_div:
+                {
+//                    (u/v)'=(u'v-uv')/v²
+                    return ((ad * nodes[1]) - (nodes[0] * bd)) / (nodes[1] * nodes[1]);
+                }
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+            break;
+            
+        default:
+            break;
+    }
+    
+    return 0; // to be atomic!!
+}
+
 
 #endif /* forward_hpp */

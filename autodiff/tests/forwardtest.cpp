@@ -81,3 +81,25 @@ TEST_F(ForwardTest, comparison_operators)
     EXPECT_TRUE(x <= x);
     EXPECT_TRUE(y <= x);
 }
+
+TEST_F(ForwardTest, forward_gradient)
+{
+    x = 6;
+    elect<double> f = 2 * x + 100;
+    std::cout << f.gradient(x).description() << std::endl;
+    std::cout << f.gradient(x).value << std::endl;
+    
+    elect<double> f2 = 2 * x * x + 100 * x;
+    elect<double> fg = f2.gradient(x);
+    std::cout << fg.description() << std::endl;
+    std::cout << fg.value << std::endl;
+    
+    elect<double> fgg = fg.gradient(x);
+    std::cout << fgg.description() << std::endl;
+    std::cout << fgg.value << std::endl;
+    
+    elect<double> f3 = x/x;
+    elect<double> f3g = f3.gradient(x); // error!
+    std::cout << f3g.description() << std::endl;
+    std::cout << f3g.value << std::endl;
+}
