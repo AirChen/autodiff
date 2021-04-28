@@ -39,52 +39,55 @@ struct elect{
     elect_type type;
     int subType;
     std::vector<elect<T>> nodes;
-    
+        
     elect(): value(0), type(elect_type_atomic) {};
     ~elect(){};
     
     std::string description();
     elect gradient(const elect& e);
     
+    // https://stackoverflow.com/questions/5695548/public-friend-swap-member-function
+    friend void swap(elect& fhs, const elect& lhs) {
+        elect& v = const_cast<elect&>(lhs);
+        
+        using std::swap;
+        swap(fhs.value, v.value);
+        swap(fhs.type, v.type);
+        swap(fhs.subType, v.subType);
+        swap(fhs.nodes, v.nodes);
+    }
+    
     elect& operator=(const elect& other) {
-        this->value = other.value;
-        this->type = other.type;
-        this->subType = other.subType;
-        this->nodes = other.nodes;
+        swap(*this, other);
         return *this;
     }
     
     elect& operator+=(const elect& other) {
-        this->value += other.value;
-        this->type = other.type;
-        this->subType = other.subType;
-        this->nodes = other.nodes;
+        T ans = this->value + other.value;
+        swap(*this, other);
+        this->value = ans;
         return *this;
     }
     
     elect& operator-=(const elect& other) {
-        this->value -= other.value;
-        this->type = other.type;
-        this->subType = other.subType;
-        this->nodes = other.nodes;
+        T ans = this->value - other.value;
+        swap(*this, other);
+        this->value = ans;
         return *this;
     }
     
     elect& operator*=(const elect& other) {
-        this->value *= other.value;
-        this->type = other.type;
-        this->subType = other.subType;
-        this->nodes = other.nodes;
+        T ans = this->value * other.value;
+        swap(*this, other);
+        this->value = ans;
         return *this;
     }
     
     elect& operator/=(const elect& other) {
 //        assert(other.value != 0);
-        
-        this->value /= other.value;
-        this->type = other.type;
-        this->subType = other.subType;
-        this->nodes = other.nodes;
+        T ans = this->value / other.value;
+        swap(*this, other);
+        this->value = ans;
         return *this;
     }
     
