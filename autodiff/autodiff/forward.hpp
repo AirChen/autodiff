@@ -43,6 +43,7 @@ struct elect{
     std::vector<elect<T>> nodes;
         
     elect(): value(0), type(elect_type_atomic), name(0) {};
+    elect(const T&& t): value(t), type(elect_type_const), name(0) {}; // to const
     ~elect(){};
     
     std::string description();
@@ -57,6 +58,7 @@ struct elect{
         swap(fhs.type, v.type);
         swap(fhs.subType, v.subType);
         swap(fhs.nodes, v.nodes);
+        // not swap name for var
     }
     
     elect& operator=(const elect& other) {
@@ -65,52 +67,27 @@ struct elect{
     }
     
     elect& operator+=(const elect& other) {
-        T ans = this->value + other.value;
-        swap(*this, other);
-        this->value = ans;
+        elect<T> o = *this + other;
+        swap(*this, o);
         return *this;
     }
     
     elect& operator-=(const elect& other) {
-        T ans = this->value - other.value;
-        swap(*this, other);
-        this->value = ans;
+        elect<T> o = *this - other;
+        swap(*this, o);
         return *this;
     }
     
     elect& operator*=(const elect& other) {
-        T ans = this->value * other.value;
-        swap(*this, other);
-        this->value = ans;
+        elect<T> o = *this * other;
+        swap(*this, o);
         return *this;
     }
     
     elect& operator/=(const elect& other) {
 //        assert(other.value != 0);
-        T ans = this->value / other.value;
-        swap(*this, other);
-        this->value = ans;
-        return *this;
-    }
-    
-    elect& operator+=(int other) {
-        this->value += other;
-        return *this;
-    }
-    
-    elect& operator-=(int other) {
-        this->value -= other;
-        return *this;
-    }
-    
-    elect& operator*=(int other) {
-        this->value *= other;
-        return *this;
-    }
-    
-    elect& operator/=(int other) {
-//        assert(other != 0);
-        this->value /= other;
+        elect<T> o = *this / other;
+        swap(*this, o);
         return *this;
     }
 };
@@ -219,162 +196,160 @@ std::string elect<T>::description() {
     return "not define elect type!";
 };
  
-namespace fake {
-    template<typename T>
-    elect<T> operator+(const elect<T>& lhs, const elect<T>& rhs)
-    {
-        bielect<T> bi(lhs, rhs, binary_type_add);
-        return bi;
-    }
+template<typename T>
+elect<T> operator+(const elect<T>& lhs, const elect<T>& rhs)
+{
+    bielect<T> bi(lhs, rhs, binary_type_add);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator+(T lhs, const elect<T>& rhs)
-    {
-        conelect<T> c(lhs);
-        bielect<T> bi(c, rhs, binary_type_add);
-        return bi;
-    }
+template<typename T>
+elect<T> operator+(T lhs, const elect<T>& rhs)
+{
+    conelect<T> c(lhs);
+    bielect<T> bi(c, rhs, binary_type_add);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator+(int lhs, const elect<T>& rhs)
-    {
-        conelect<T> c(static_cast<T>(lhs));
-        bielect<T> bi(c, rhs, binary_type_add);
-        return bi;
-    }
+template<typename T>
+elect<T> operator+(int lhs, const elect<T>& rhs)
+{
+    conelect<T> c(static_cast<T>(lhs));
+    bielect<T> bi(c, rhs, binary_type_add);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator+(const elect<T>& lhs, T rhs)
-    {
-        conelect<T> c(rhs);
-        bielect<T> bi(lhs, c, binary_type_add);
-        return bi;
-    }
+template<typename T>
+elect<T> operator+(const elect<T>& lhs, T rhs)
+{
+    conelect<T> c(rhs);
+    bielect<T> bi(lhs, c, binary_type_add);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator+(const elect<T>& lhs, int rhs)
-    {
-        conelect<T> c(static_cast<T>(rhs));
-        bielect<T> bi(lhs, c, binary_type_add);
-        return bi;
-    }
+template<typename T>
+elect<T> operator+(const elect<T>& lhs, int rhs)
+{
+    conelect<T> c(static_cast<T>(rhs));
+    bielect<T> bi(lhs, c, binary_type_add);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator-(const elect<T>& lhs, const elect<T>& rhs)
-    {
-        bielect<T> bi(lhs, rhs, binary_type_sub);
-        return bi;
-    }
+template<typename T>
+elect<T> operator-(const elect<T>& lhs, const elect<T>& rhs)
+{
+    bielect<T> bi(lhs, rhs, binary_type_sub);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator-(T lhs, const elect<T>& rhs)
-    {
-        conelect<T> c(lhs);
-        bielect<T> bi(c, rhs, binary_type_sub);
-        return bi;
-    }
+template<typename T>
+elect<T> operator-(T lhs, const elect<T>& rhs)
+{
+    conelect<T> c(lhs);
+    bielect<T> bi(c, rhs, binary_type_sub);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator-(int lhs, const elect<T>& rhs)
-    {
-        conelect<T> c(static_cast<T>(lhs));
-        bielect<T> bi(c, rhs, binary_type_sub);
-        return bi;
-    }
+template<typename T>
+elect<T> operator-(int lhs, const elect<T>& rhs)
+{
+    conelect<T> c(static_cast<T>(lhs));
+    bielect<T> bi(c, rhs, binary_type_sub);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator-(const elect<T>& lhs, T rhs)
-    {
-        conelect<T> c(rhs);
-        bielect<T> bi(lhs, c, binary_type_sub);
-        return bi;
-    }
+template<typename T>
+elect<T> operator-(const elect<T>& lhs, T rhs)
+{
+    conelect<T> c(rhs);
+    bielect<T> bi(lhs, c, binary_type_sub);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator-(const elect<T>& lhs, int rhs)
-    {
-        conelect<T> c(static_cast<T>(rhs));
-        bielect<T> bi(lhs, c, binary_type_sub);
-        return bi;
-    }
+template<typename T>
+elect<T> operator-(const elect<T>& lhs, int rhs)
+{
+    conelect<T> c(static_cast<T>(rhs));
+    bielect<T> bi(lhs, c, binary_type_sub);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator*(const elect<T>& lhs, const elect<T>& rhs)
-    {
-        bielect<T> bi(lhs, rhs, binary_type_mul);
-        return bi;
-    }
+template<typename T>
+elect<T> operator*(const elect<T>& lhs, const elect<T>& rhs)
+{
+    bielect<T> bi(lhs, rhs, binary_type_mul);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator*(T lhs, const elect<T>& rhs)
-    {
-        conelect<T> c(lhs);
-        bielect<T> bi(c, rhs, binary_type_mul);
-        return bi;
-    }
+template<typename T>
+elect<T> operator*(T lhs, const elect<T>& rhs)
+{
+    conelect<T> c(lhs);
+    bielect<T> bi(c, rhs, binary_type_mul);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator*(int lhs, const elect<T>& rhs)
-    {
-        conelect<T> c(static_cast<T>(lhs));
-        bielect<T> bi(c, rhs, binary_type_mul);
-        return bi;
-    }
+template<typename T>
+elect<T> operator*(int lhs, const elect<T>& rhs)
+{
+    conelect<T> c(static_cast<T>(lhs));
+    bielect<T> bi(c, rhs, binary_type_mul);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator*(const elect<T>& lhs, T rhs)
-    {
-        conelect<T> c(rhs);
-        bielect<T> bi(lhs, c, binary_type_mul);
-        return bi;
-    }
+template<typename T>
+elect<T> operator*(const elect<T>& lhs, T rhs)
+{
+    conelect<T> c(rhs);
+    bielect<T> bi(lhs, c, binary_type_mul);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator*(const elect<T>& lhs, int rhs)
-    {
-        conelect<T> c(static_cast<T>(rhs));
-        bielect<T> bi(lhs, c, binary_type_mul);
-        return bi;
-    }
+template<typename T>
+elect<T> operator*(const elect<T>& lhs, int rhs)
+{
+    conelect<T> c(static_cast<T>(rhs));
+    bielect<T> bi(lhs, c, binary_type_mul);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator/(const elect<T>& lhs, const elect<T>& rhs)
-    {
-        bielect<T> bi(lhs, rhs, binary_type_div);
-        return bi;
-    }
+template<typename T>
+elect<T> operator/(const elect<T>& lhs, const elect<T>& rhs)
+{
+    bielect<T> bi(lhs, rhs, binary_type_div);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator/(T lhs, const elect<T>& rhs)
-    {
-        conelect<T> c(lhs);
-        bielect<T> bi(c, rhs, binary_type_div);
-        return bi;
-    }
+template<typename T>
+elect<T> operator/(T lhs, const elect<T>& rhs)
+{
+    conelect<T> c(lhs);
+    bielect<T> bi(c, rhs, binary_type_div);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator/(int lhs, const elect<T>& rhs)
-    {
-        conelect<T> c(static_cast<T>(lhs));
-        bielect<T> bi(c, rhs, binary_type_div);
-        return bi;
-    }
+template<typename T>
+elect<T> operator/(int lhs, const elect<T>& rhs)
+{
+    conelect<T> c(static_cast<T>(lhs));
+    bielect<T> bi(c, rhs, binary_type_div);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator/(const elect<T>& lhs, T rhs)
-    {
-        conelect<T> c(rhs);
-        bielect<T> bi(lhs, c, binary_type_div);
-        return bi;
-    }
+template<typename T>
+elect<T> operator/(const elect<T>& lhs, T rhs)
+{
+    conelect<T> c(rhs);
+    bielect<T> bi(lhs, c, binary_type_div);
+    return bi;
+}
 
-    template<typename T>
-    elect<T> operator/(const elect<T>& lhs, int rhs)
-    {
-        conelect<T> c(static_cast<T>(rhs));
-        bielect<T> bi(lhs, c, binary_type_div);
-        return bi;
-    }
+template<typename T>
+elect<T> operator/(const elect<T>& lhs, int rhs)
+{
+    conelect<T> c(static_cast<T>(rhs));
+    bielect<T> bi(lhs, c, binary_type_div);
+    return bi;
 }
 
 namespace compare {
@@ -534,13 +509,12 @@ namespace compare {
     }
 }
 
-using namespace fake;
 template<typename T>
 elect<T> elect<T>::gradient(const elect<T>& e) {
     switch (type) {
         case elect_type_var:
         {
-            if (subType == e.subType) {
+            if (name == e.name) {
                 return conelect<T>(static_cast<T>(1));
             }
             return conelect<T>(static_cast<T>(0));

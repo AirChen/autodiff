@@ -33,7 +33,6 @@ TEST_F(ForwardTest, trivial_tests)
     EXPECT_TRUE(x == 20);
 };
 
-using namespace fake;
 TEST_F(ForwardTest, aliasing_tests)
 {
     x = 1; x = x + 3*x - 2*x + x;
