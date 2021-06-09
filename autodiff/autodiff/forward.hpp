@@ -33,14 +33,16 @@ enum binary_type {
     binary_type_div
 };
 
+
 template<typename T>
 struct elect{
     T value;
     elect_type type;
+    char name;
     int subType;
     std::vector<elect<T>> nodes;
         
-    elect(): value(0), type(elect_type_atomic) {};
+    elect(): value(0), type(elect_type_atomic), name(0) {};
     ~elect(){};
     
     std::string description();
@@ -127,23 +129,17 @@ struct varelect: public elect<T> {
     varelect(T v, char c) {
         this->value = v;
         this->type = elect_type_var;
-        this->subType = c;
+        this->name = c;
     };
     varelect(const elect<T>& o) {
-        this->value = o.value;
-        this->type = o.type;
-        this->subType = o.subType;
-        this->nodes = o.nodes;
+        swap(*this, o);
     }
     ~varelect() {};
     
     varelect& operator=(T v) {
         this->value = v;
-        return *this;
-    }
-    
-    varelect& operator=(int v) {
-        this->value = v;
+        this->type = elect_type_var;
+        this->nodes.clear();
         return *this;
     }
 };
@@ -198,7 +194,7 @@ std::string elect<T>::description() {
         return "atomic type!";
     } else if (type == elect_type_var) {
         std::string key;
-        key.push_back((char)subType);
+        key.push_back((char)name);
         return "var(" + key + " : " + std::to_string(value) + ")";
     } else if (type == elect_type_const) {
         return "( " + std::to_string(this->value) + " )";
