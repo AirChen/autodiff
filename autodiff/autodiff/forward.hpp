@@ -515,15 +515,15 @@ elect<T> elect<T>::gradient(const elect<T>& e) {
         case elect_type_var:
         {
             if (name == e.name) {
-                return conelect<T>(static_cast<T>(1));
+                return static_cast<T>(1);
             }
-            return conelect<T>(static_cast<T>(0));
+            return static_cast<T>(0);
         }
             break;
         case elect_type_atomic:
         case elect_type_const:
         {
-            return conelect<T>(static_cast<T>(0));
+            return static_cast<T>(0);
         }
             break;
         case elect_type_single:
@@ -538,21 +538,70 @@ elect<T> elect<T>::gradient(const elect<T>& e) {
             switch (subType) {
                 case binary_type_add:
                 {
+                    if ((int)ad.value == 0 && (int)bd.value != 0) {
+                        return bd;
+                    }
+                    
+                    if ((int)ad.value != 0 && (int)bd.value == 0) {
+                        return ad;
+                    }
+                    
+                    if ((int)ad.value == 0 && (int)bd.value == 0) {
+                        static_cast<T>(0);
+                    }
+                    
                     return ad + bd;
                 }
                     break;
                 case binary_type_sub:
                 {
+                    if ((int)ad.value == 0 && (int)bd.value != 0) {
+                        return bd;
+                    }
+                    
+                    if ((int)ad.value != 0 && (int)bd.value == 0) {
+                        ad.value = 0 - ad.value;
+                        return ad;
+                    }
+                    
+                    if ((int)ad.value == 0 && (int)bd.value == 0) {
+                        static_cast<T>(0);
+                    }
+                    
                     return ad - bd;
                 }
                     break;
                 case binary_type_mul:
                 {
+                    if ((int)ad.value == 0 && (int)bd.value != 0) {
+                        return nodes[0] * bd;
+                    }
+                    
+                    if ((int)ad.value != 0 && (int)bd.value == 0) {
+                        return ad * nodes[1];
+                    }
+                    
+                    if ((int)ad.value == 0 && (int)bd.value == 0) {
+                        static_cast<T>(0);
+                    }
+                    
                     return ad * nodes[1] + nodes[0] * bd;
                 }
                     break;
                 case binary_type_div:
                 {
+                    if ((int)ad.value == 0 && (int)bd.value != 0) {
+                        return (0 - (nodes[0] * bd)) / (nodes[1] * nodes[1]);
+                    }
+                    
+                    if ((int)ad.value != 0 && (int)bd.value == 0) {
+                        return (ad * nodes[1]) / (nodes[1] * nodes[1]);
+                    }
+                    
+                    if ((int)ad.value == 0 && (int)bd.value == 0) {
+                        static_cast<T>(0);
+                    }
+                    
 //                    (u/v)'=(u'v-uv')/v²
                     return ((ad * nodes[1]) - (nodes[0] * bd)) / (nodes[1] * nodes[1]);
                 }
